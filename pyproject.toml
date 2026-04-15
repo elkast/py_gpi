@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "py_gpi"
-version = "2.0.4"
+version = "2.0.5"
 description = "GPI — Générateur de Projet Intelligent pour Python backend"
 readme = "README.md"
 requires-python = ">=3.9"
@@ -58,8 +58,8 @@ gpi = "gpi.cli.app:main"
 # Espace réservé aux plugins tiers — les modules natifs sont chargés directement
 
 [project.urls]
-Homepage = "https://github.com/sossou-elkast/py_gpi"
-Repository = "https://github.com/sossou-elkast/py_gpi"
+Homepage = "https://github.com/elkast/py_gpi"
+Repository = "https://github.com/elkast/py_gpi"
 
 [tool.hatch.build.targets.wheel]
 packages = ["gpi"]

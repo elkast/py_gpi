@@ -7,7 +7,7 @@ Usage CLI : gpi init
 Usage API  : import gpi; project = gpi.compose(...)
 """
 
-__version__ = "2.0.4"
+__version__ = "2.0.5"
 __author__ = "SOSSOU Elkast Orsini"
 
 from gpi.core.config import ProjectConfig

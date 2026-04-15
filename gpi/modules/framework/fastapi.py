@@ -10,7 +10,7 @@ from gpi.core.config import ProjectConfig
 _MAIN_PY = '''\
 """Point d\'entrée de l\'application {{ project_name }}.
 
-Généré par GPI v2 — https://github.com/sossou-elkast/py_gpi
+Généré par GPI v2 — https://github.com/elkast/py_gpi
 """
 
 from fastapi import FastAPI
@@ -99,7 +99,7 @@ _README = '''\
 
 {{ description }}
 
-*Généré avec [GPI](https://github.com/sossou-elkast/py_gpi) v2*
+*Généré avec [GPI](https://github.com/elkast/py_gpi) v2*
 
 ## Installation rapide
 

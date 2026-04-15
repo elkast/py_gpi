@@ -85,4 +85,4 @@ def publish_plugin(
     console.print('   mon_module = "mon_package:MonModule"\n')
     console.print("2. Construisez le package : python -m build")
     console.print("3. Publiez sur PyPI : twine upload dist/*")
-    console.print("\nDocumentation : https://github.com/sossou-elkast/py_gpi/wiki/plugins")
+    console.print("\nDocumentation : https://github.com/elkast/py_gpi/wiki/plugins")
