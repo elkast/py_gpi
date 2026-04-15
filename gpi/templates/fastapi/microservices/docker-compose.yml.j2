@@ -1,0 +1,59 @@
+version: "3.9"
+
+services:
+{% for service in services %}
+  {{ service }}:
+    build: ./services/{{ service }}
+    ports:
+      - "{{ port + loop.index0 * 100 }}:8000"
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - SECRET_KEY=${SECRET_KEY}
+    {% if "cache-redis" in modules %}
+      - REDIS_URL=${REDIS_URL}
+    {% endif %}
+    depends_on:
+      {% if "database-postgres" in modules %}
+      - postgres
+      {% elif "database-mysql" in modules %}
+      - mysql
+      {% endif %}
+      {% if "cache-redis" in modules %}
+      - redis
+      {% endif %}
+{% endfor %}
+{% if "database-postgres" in modules %}
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: {{ project_name }}
+      POSTGRES_USER: ${DB_USER:-user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+{% endif %}
+{% if "database-mysql" in modules %}
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: {{ project_name }}
+      MYSQL_USER: ${DB_USER:-user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-password}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootpassword}
+    volumes:
+      - mysql_data:/var/lib/mysql
+{% endif %}
+{% if "cache-redis" in modules %}
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+{% endif %}
+
+volumes:
+{% if "database-postgres" in modules %}
+  postgres_data:
+{% endif %}
+{% if "database-mysql" in modules %}
+  mysql_data:
+{% endif %}

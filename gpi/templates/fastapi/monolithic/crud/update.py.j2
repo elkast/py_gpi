@@ -1,0 +1,41 @@
+"""Opération UPDATE — Catalogue.
+
+HTTP Methods : PUT   /catalogue/{id}  (remplacement complet)
+               PATCH /catalogue/{id}  (modification partielle)
+Généré par GPI v2
+"""
+
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+
+from database import obtenir_db
+from models.catalogue import ArticleCatalogue
+from schemas.catalogue import ArticleCatalogueRemplacer, ArticleCatalogueModifier, ArticleCatalogueReponse
+
+router = APIRouter()
+
+
+@router.put("/{article_id}", response_model=ArticleCatalogueReponse)
+def remplacer_article(article_id: int, donnees: ArticleCatalogueRemplacer, db: Session = Depends(obtenir_db)):
+    """Remplacement complet de l'article (PUT)."""
+    db_article = db.query(ArticleCatalogue).filter(ArticleCatalogue.id == article_id).first()
+    if not db_article:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Article {article_id} introuvable.")
+    for champ, valeur in donnees.model_dump().items():
+        setattr(db_article, champ, valeur)
+    db.commit()
+    db.refresh(db_article)
+    return db_article
+
+
+@router.patch("/{article_id}", response_model=ArticleCatalogueReponse)
+def modifier_article(article_id: int, donnees: ArticleCatalogueModifier, db: Session = Depends(obtenir_db)):
+    """Modification partielle de l'article (PATCH)."""
+    db_article = db.query(ArticleCatalogue).filter(ArticleCatalogue.id == article_id).first()
+    if not db_article:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Article {article_id} introuvable.")
+    for champ, valeur in donnees.model_dump(exclude_unset=True).items():
+        setattr(db_article, champ, valeur)
+    db.commit()
+    db.refresh(db_article)
+    return db_article

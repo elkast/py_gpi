@@ -1,0 +1,52 @@
+"""Point d'entrée de l'application {{ project_name }}.
+
+Généré par GPI v2 — https://github.com/sossou-elkast/py_gpi
+"""
+
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+{% if "database-sqlite" in modules or "database-postgres" in modules or "database-mysql" in modules %}
+from database import moteur, Base
+
+# Création des tables au démarrage
+Base.metadata.create_all(bind=moteur)
+{% endif %}
+{% if "database-sqlite" in modules or "database-postgres" in modules or "database-mysql" in modules %}
+from app.catalogue.create import router as create_router
+from app.catalogue.read import router as read_router
+from app.catalogue.update import router as update_router
+from app.catalogue.delete import router as delete_router
+{% endif %}
+{% if "auth-jwt" in modules %}
+from auth.routes import router as auth_router
+{% endif %}
+
+app = FastAPI(
+    title="{{ project_name }}",
+    description="{{ description }}",
+    version="1.0.0",
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+{% if "database-sqlite" in modules or "database-postgres" in modules or "database-mysql" in modules %}
+app.include_router(create_router, prefix="/catalogue", tags=["Catalogue"])
+app.include_router(read_router, prefix="/catalogue", tags=["Catalogue"])
+app.include_router(update_router, prefix="/catalogue", tags=["Catalogue"])
+app.include_router(delete_router, prefix="/catalogue", tags=["Catalogue"])
+{% endif %}
+{% if "auth-jwt" in modules %}
+app.include_router(auth_router, prefix="/auth", tags=["Authentification"])
+{% endif %}
+
+
+@app.get("/", tags=["Santé"])
+def racine():
+    """Point de contrôle de santé de l'API."""
+    return {"statut": "ok", "projet": "{{ project_name }}"}

@@ -1,0 +1,25 @@
+"""Point d'entrée de l'application {{ project_name }}.
+
+Généré par GPI v2
+"""
+
+from flask import Flask, jsonify
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+app = Flask(__name__)
+app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-secret")
+app.config["DEBUG"] = os.environ.get("DEBUG", "true").lower() == "true"
+
+
+@app.route("/", methods=["GET"])
+def racine():
+    """Point de contrôle de santé."""
+    return jsonify({"statut": "ok", "projet": "{{ project_name }}"})
+
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", {{ port }}))
+    app.run(host="0.0.0.0", port=port, debug=app.config["DEBUG"])

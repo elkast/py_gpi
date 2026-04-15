@@ -1,0 +1,24 @@
+"""Opération DELETE — Catalogue.
+
+HTTP Method : DELETE /catalogue/{id}
+Généré par GPI v2
+"""
+
+from fastapi import APIRouter, Depends, HTTPException, Response, status
+from sqlalchemy.orm import Session
+
+from database import obtenir_db
+from models.catalogue import ArticleCatalogue
+
+router = APIRouter()
+
+
+@router.delete("/{article_id}", status_code=status.HTTP_204_NO_CONTENT)
+def supprimer_article(article_id: int, db: Session = Depends(obtenir_db)):
+    """Supprime un article par son ID."""
+    db_article = db.query(ArticleCatalogue).filter(ArticleCatalogue.id == article_id).first()
+    if not db_article:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Article {article_id} introuvable.")
+    db.delete(db_article)
+    db.commit()
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

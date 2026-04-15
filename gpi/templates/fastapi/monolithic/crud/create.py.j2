@@ -1,0 +1,27 @@
+"""Opération CREATE — Catalogue.
+
+HTTP Method : POST /catalogue/
+Généré par GPI v2
+"""
+
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+
+from database import obtenir_db
+from models.catalogue import ArticleCatalogue
+from schemas.catalogue import ArticleCatalogueCreer, ArticleCatalogueReponse
+
+router = APIRouter()
+
+
+@router.post("/", response_model=ArticleCatalogueReponse, status_code=status.HTTP_201_CREATED)
+def creer_article(article: ArticleCatalogueCreer, db: Session = Depends(obtenir_db)):
+    """Crée un nouvel article dans le catalogue."""
+    existant = db.query(ArticleCatalogue).filter(ArticleCatalogue.nom == article.nom).first()
+    if existant:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=f"Article '{article.nom}' existe déjà.")
+    db_article = ArticleCatalogue(**article.model_dump())
+    db.add(db_article)
+    db.commit()
+    db.refresh(db_article)
+    return db_article

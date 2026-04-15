@@ -1,0 +1,32 @@
+"""Opération READ — Catalogue.
+
+HTTP Methods : GET /catalogue/      (liste paginée)
+               GET /catalogue/{id}  (article par ID)
+Généré par GPI v2
+"""
+
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy.orm import Session
+
+from database import obtenir_db
+from models.catalogue import ArticleCatalogue
+from schemas.catalogue import ArticleCatalogueReponse, ReponsePaginee
+
+router = APIRouter()
+
+
+@router.get("/", response_model=ReponsePaginee[ArticleCatalogueReponse])
+def lister_articles(debut: int = Query(0, ge=0), limite: int = Query(20, ge=1, le=100), db: Session = Depends(obtenir_db)):
+    """Liste tous les articles avec pagination."""
+    total = db.query(ArticleCatalogue).count()
+    articles = db.query(ArticleCatalogue).offset(debut).limit(limite).all()
+    return ReponsePaginee(total=total, debut=debut, limite=limite, articles=articles)
+
+
+@router.get("/{article_id}", response_model=ArticleCatalogueReponse)
+def obtenir_article(article_id: int, db: Session = Depends(obtenir_db)):
+    """Récupère un article par son ID."""
+    article = db.query(ArticleCatalogue).filter(ArticleCatalogue.id == article_id).first()
+    if not article:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Article {article_id} introuvable.")
+    return article

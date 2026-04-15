@@ -1,0 +1,37 @@
+# {{ project_name }}
+
+{{ description }}
+
+*Généré avec [GPI](https://github.com/sossou-elkast/py_gpi) v2*
+
+## Installation rapide
+
+```bash
+pip install -r requirements.txt
+cp .env.example .env
+```
+
+## Lancer le projet
+
+{% if framework == "fastapi" %}
+```bash
+uvicorn main:app --reload --host 0.0.0.0 --port {{ port }}
+```
+
+Documentation interactive : http://localhost:{{ port }}/docs
+{% elif framework == "flask" %}
+```bash
+python app.py
+```
+{% elif framework == "django" %}
+```bash
+python manage.py migrate
+python manage.py runserver 0.0.0.0:{{ port }}
+```
+{% endif %}
+
+## Tests
+
+```bash
+pytest tests/ -v
+```
